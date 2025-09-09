@@ -120,20 +120,20 @@
                     Caja de descripción del producto.
                     Se ha quitado la clase 'hidden' para que el JS pueda controlarla.
                 -->
-                <div id="product-description" class="product-description-box" style="display: none;">
+                <div id="product-description" class="product-description-box">
                     <h3 id="product-title"></h3>
                     <p id="product-description-text"></p>
                 </div>
 
                 <!-- Flecha de navegación a la izquierda -->
-                <button id="prev-button" class="navigation-control left" style="display: none;">
+                <button id="prev-button" class="navigation-control left">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M15 18l-6-6 6-6"/>
                     </svg>
                 </button>
 
                 <!-- Flecha de navegación a la derecha -->
-                <button id="next-button" class="navigation-control right" style="display: none;">
+                <button id="next-button" class="navigation-control right">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 18l6-6-6-6"/>
                     </svg>
@@ -203,7 +203,11 @@
                 console.log(`Modelo cambiado a: ${product.title}`);
             }
 
+            // Función para mostrar/ocultar los controles de navegación y descripción
             function showControls(isVisible) {
+                // Controlamos la visibilidad de los elementos directamente con JavaScript.
+                // Esto es más seguro que usar las clases de Tailwind como 'hidden'
+                // que pueden tener reglas CSS de 'important' que bloquean los cambios.
                 prevButton.style.display = isVisible ? 'block' : 'none';
                 nextButton.style.display = isVisible ? 'block' : 'none';
                 productDescriptionBox.style.display = isVisible ? 'block' : 'none';
@@ -212,8 +216,10 @@
             // Manejar cambios en el estado de AR
             modelViewer.addEventListener('ar-status', (event) => {
                 if (event.detail.status === 'entered-ar') {
+                    // Si entramos en el modo AR, mostramos los controles
                     showControls(true);
                 } else if (event.detail.status === 'exited-ar') {
+                    // Si salimos del modo AR, los ocultamos
                     showControls(false);
                 }
             });
@@ -258,3 +264,4 @@
     </script>
 </body>
 </html>
+
