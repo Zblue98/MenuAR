@@ -237,10 +237,10 @@
             });
 
             // Ocultar el botón de AR si la realidad aumentada no es soportada
-            if (modelViewer.arStatus === 'not-supported') {
+            if (modelViewer.has-attribute('ar-status') && modelViewer.arStatus === 'not-supported') {
                 arButton.style.display = 'none';
             } else {
-                arButton.style.display = 'inline-flex';
+                arButton.style.style.display = 'inline-flex';
             }
             
             // Manejar clics en el botón flotante de AR (solo para móviles)
