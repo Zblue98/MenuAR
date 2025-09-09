@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú en Realidad Aumentada</title>
+    <!-- Incluye el CDN de Tailwind CSS para un diseño moderno y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Incluye la fuente 'Inter' de Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 960px;
+            margin: auto;
+            padding: 1rem;
+        }
+        model-viewer {
+            width: 100%;
+            height: 400px;
+            background-color: #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        /* Estilos para el botón flotante de AR */
+        .ar-button {
+            background-color: #10b981;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ar-button:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+        /* Estilos para los controles de navegación */
+        .navigation-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 9999px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .navigation-control:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        .navigation-control.left {
+            left: 1rem;
+        }
+        .navigation-control.right {
+            right: 1rem;
+        }
+        /* Estilos para la caja de descripción del producto */
+        .product-description-box {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            right: 1rem;
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            z-index: 10;
+        }
+        .product-description-box h3 {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+        .product-description-box p {
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="container bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="p-6 md:p-10 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Menú de Realidad Aumentada</h1>
+            <p class="text-gray-500 mb-6">Escanea el código QR y visualiza nuestros productos en tu espacio.</p>
+
+            <!-- Contenedor para el visor de modelo 3D -->
+            <div class="relative mb-6">
+                <!--
+                    El componente 'model-viewer' es la magia.
+                    'src': Ruta a tu modelo 3D en formato GLB.
+                    'ar': Habilita la realidad aumentada.
+                    'ar-modes': Define los modos AR disponibles (webxr, scene-viewer).
+                    'camera-controls': Permite a los usuarios rotar el modelo.
+                    'shadow-intensity': Mejora las sombras del modelo.
+                    'alt': Texto descriptivo para accesibilidad.
+                -->
+                <model-viewer
+                    id="model-viewer"
+                    src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+                    ar
+                    ar-modes="webxr scene-viewer quick-look"
+                    camera-controls
+                    shadow-intensity="1"
+                    alt="Modelo 3D de un astronauta"
+                    class="w-full h-96 rounded-xl border-4 border-gray-200"
+                ></model-viewer>
+                
+                <!-- Caja de descripción del producto, visible solo en AR -->
+                <div id="product-description" class="product-description-box hidden">
+                    <h3 id="product-title"></h3>
+                    <p id="product-description-text"></p>
+                </div>
+
+                <!-- Flecha de navegación a la izquierda -->
+                <button id="prev-button" class="navigation-control left">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+
+                <!-- Flecha de navegación a la derecha -->
+                <button id="next-button" class="navigation-control right">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+                
+                <!-- Botón de Realidad Aumentada flotante solo para dispositivos móviles -->
+                <button id="ar-button" class="ar-button absolute bottom-4 left-1/2 transform -translate-x-1/2 hidden lg:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 14.899A7 7 0 0 1 20 14.899"></path>
+                        <path d="M12 12v9"></path>
+                        <path d="M12 3c-1.897 0-3.564.55-4.82 1.54"></path>
+                    </svg>
+                    Ver en AR
+                </button>
+            </div>
+
+            <!-- Menú de productos con tarjetas -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Tarjeta de Producto 1 -->
+                <div class="product-card bg-gray-50 p-4 rounded-xl shadow-sm text-left cursor-pointer transition-transform hover:scale-105" data-src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" data-title="Astronauta" data-description="Este es un modelo 3D de un astronauta listo para explorar el espacio.">
+                    <h2 class="font-semibold text-lg text-gray-800">Modelo de Astronauta</h2>
+                    <p class="text-sm text-gray-500 mt-1">Un modelo 3D de un astronauta.</p>
+                </div>
+
+                <!-- Tarjeta de Producto 2 -->
+                <div class="product-card bg-gray-50 p-4 rounded-xl shadow-sm text-left cursor-pointer transition-transform hover:scale-105" data-src="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb" data-title="Robot" data-description="Un robot amigable con animaciones expresivas, ideal para demostraciones.">
+                    <h2 class="font-semibold text-lg text-gray-800">Robot Expresivo</h2>
+                    <p class="text-sm text-gray-500 mt-1">Un robot con animaciones.</p>
+                </div>
+
+                <!-- Tarjeta de Producto 3 -->
+                <div class="product-card bg-gray-50 p-4 rounded-xl shadow-sm text-left cursor-pointer transition-transform hover:scale-105" data-src="https://modelviewer.dev/shared-assets/models/CesiumMilkTruck.glb" data-title="Camión de Leche" data-description="Un camión de leche clásico con un diseño vintage.">
+                    <h2 class="font-semibold text-lg text-gray-800">Camión de Leche</h2>
+                    <p class="text-sm text-gray-500 mt-1">Un clásico camión de reparto.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para la librería de model-viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modelViewer = document.getElementById('model-viewer');
+            const productCards = document.querySelectorAll('.product-card');
+            const prevButton = document.getElementById('prev-button');
+            const nextButton = document.getElementById('next-button');
+            const arButton = document.getElementById('ar-button');
+            const productDescriptionBox = document.getElementById('product-description');
+            const productTitle = document.getElementById('product-title');
+            const productDescriptionText = document.getElementById('product-description-text');
+
+            const products = Array.from(productCards).map(card => ({
+                src: card.dataset.src,
+                title: card.dataset.title,
+                description: card.dataset.description
+            }));
+            let currentIndex = 0;
+
+            function updateModel(index) {
+                const product = products[index];
+                modelViewer.src = product.src;
+                modelViewer.alt = `Modelo 3D de ${product.title}`;
+                productTitle.textContent = product.title;
+                productDescriptionText.textContent = product.description;
+                console.log(`Modelo cambiado a: ${product.title}`);
+            }
+
+            function showControls(isVisible) {
+                prevButton.style.display = isVisible ? 'block' : 'none';
+                nextButton.style.display = isVisible ? 'block' : 'none';
+                productDescriptionBox.style.display = isVisible ? 'block' : 'none';
+            }
+
+            // Manejar cambios en el estado de AR
+            modelViewer.addEventListener('ar-status', (event) => {
+                if (event.detail.status === 'entered-ar') {
+                    showControls(true);
+                } else if (event.detail.status === 'exited-ar') {
+                    showControls(false);
+                }
+            });
+
+            // Navegación con flechas
+            prevButton.addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + products.length) % products.length;
+                updateModel(currentIndex);
+            });
+
+            nextButton.addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % products.length;
+                updateModel(currentIndex);
+            });
+
+            // Manejar clics en las tarjetas de producto
+            productCards.forEach((card, index) => {
+                card.addEventListener('click', () => {
+                    currentIndex = index;
+                    updateModel(currentIndex);
+                    // Desplazar la vista al inicio de la página o al visor del modelo
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            // Ocultar el botón de AR si la realidad aumentada no es soportada
+            if (modelViewer.arStatus === 'not-supported') {
+                arButton.style.display = 'none';
+            } else {
+                arButton.style.display = 'inline-flex';
+            }
+            
+            // Manejar clics en el botón flotante de AR (solo para móviles)
+            arButton.addEventListener('click', () => {
+                modelViewer.activateAR();
+            });
+
+            // Inicializar con el primer producto
+            updateModel(currentIndex);
+            showControls(false); // Ocultar los controles al inicio
+        });
+    </script>
+</body>
+</html>
