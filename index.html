@@ -116,21 +116,24 @@
                     class="w-full h-96 rounded-xl border-4 border-gray-200"
                 ></model-viewer>
                 
-                <!-- Caja de descripción del producto, visible solo en AR -->
-                <div id="product-description" class="product-description-box hidden">
+                <!--
+                    Caja de descripción del producto.
+                    Se ha quitado la clase 'hidden' para que el JS pueda controlarla.
+                -->
+                <div id="product-description" class="product-description-box" style="display: none;">
                     <h3 id="product-title"></h3>
                     <p id="product-description-text"></p>
                 </div>
 
                 <!-- Flecha de navegación a la izquierda -->
-                <button id="prev-button" class="navigation-control left">
+                <button id="prev-button" class="navigation-control left" style="display: none;">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M15 18l-6-6 6-6"/>
                     </svg>
                 </button>
 
                 <!-- Flecha de navegación a la derecha -->
-                <button id="next-button" class="navigation-control right">
+                <button id="next-button" class="navigation-control right" style="display: none;">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 18l6-6-6-6"/>
                     </svg>
@@ -237,10 +240,10 @@
             });
 
             // Ocultar el botón de AR si la realidad aumentada no es soportada
-            if (modelViewer.has-attribute('ar-status') && modelViewer.arStatus === 'not-supported') {
+            if (modelViewer.arStatus === 'not-supported') {
                 arButton.style.display = 'none';
             } else {
-                arButton.style.style.display = 'inline-flex';
+                arButton.style.display = 'inline-flex';
             }
             
             // Manejar clics en el botón flotante de AR (solo para móviles)
@@ -248,9 +251,9 @@
                 modelViewer.activateAR();
             });
 
-            // Inicializar con el primer producto
+            // Inicializar con el primer producto y ocultar los controles de AR
             updateModel(currentIndex);
-            showControls(false); // Ocultar los controles al inicio
+            showControls(false); 
         });
     </script>
 </body>
